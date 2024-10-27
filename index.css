@@ -1,0 +1,71 @@
+.container {
+    max-width: 1000px;
+}
+h1 {
+    text-align: center;
+}
+
+@media (max-width: 368px) {
+    form {
+        fieldset {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+    }
+}
+
+form {
+    fieldset {
+        display: flex;
+        align-items: center;
+    }
+}
+
+.taskContainer {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    width: 100%;
+    margin-top: 70px;
+    padding-left: 0;
+
+    li {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        align-items: center;
+        font-size: 1.5rem;
+
+        button.Red {
+            background-color: rgb(176, 42, 42);
+            border: none;
+        }
+        button.Green {
+            background-color: green;
+            border: none;
+        }
+
+        .inputEdit {
+            margin-top: 20px;
+        }
+
+        .groupEditTask {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            input {
+                flex: 9;
+            }
+
+            button {
+                flex: 1;
+            }
+        }
+        .groupEditTask.hidden {
+            display: none;
+        }
+    }
+}
