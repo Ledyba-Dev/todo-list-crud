@@ -89,8 +89,7 @@ const succesTask = (event) => {
 // mostrará el input con el botón para editar la tarea
 const editTask = (event) => {
     const taskId = event.target.parentElement.parentElement.id;
-    taskToEdit = tasks.filter((task) => !(task.id != taskId));
-    taskIdToEdit = taskToEdit[0].id;
+    taskToEdit = tasks.filter((task) => (task.id == taskId));
     showInputEditTask(taskToEdit);
 };
 
