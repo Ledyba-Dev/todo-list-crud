@@ -96,7 +96,7 @@ const editTask = (event) => {
 
 // Función que sobreescribirá la vieja tarea por la nueva tareas
 const overwriteTask = (event) => {
-    const inputEdit = document.querySelector(".inputEdit");
+    const inputEdit = event.target.previousElementSibling;
     if (inputEdit.value === "") {
         alert("No puedes editar y guardar un valor vacio");
         return;
