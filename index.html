@@ -20,7 +20,18 @@
         </form>
 
         <ul class="taskContainer grid">
-            
+            <li id=${task.id}>
+                <h3>Tarea</h3>
+                <div class="role-group">
+                    <button id= "editTask">🖊</button>
+                    <button id="successTask" class="success">✅</button>
+                    <button id="deleteTask" class="Red">Eliminar tarea</button>
+                </div>
+                <div class="groupEditTask">
+                    <input class="inputEdit" type="text" name="inputEdit" placeholder="Edite su tarea">
+                    <button id="overwriteTask">✅</button>
+                </div>
+            </li>
         </ul>
     </main>
 
