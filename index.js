@@ -1,24 +1,19 @@
-// VARIABLES Y CONSTANTES
-
-const formList = document.getElementById("formTasks");
+// VARIABLES INICIALES
+const formList = document.getElementById("formTask");
 const inputTask = document.getElementById("inputTask");
 const taskContainer = document.querySelector(".taskContainer");
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
 // FUNCIONES
-
-// FUNCIONES REUTILIZADAS
-
-const addTaskToHtml = (task) => {
+const addTaskToHtml = ({ value, done, id }) => {
     try {
-        if (task) {
-            taskContainer.innerHTML += `
-            <li id=${task.id}>
-                <h3>${task.value}</h3>
+        taskContainer.innerHTML += `
+            <li id=${id}>
+                <h3>${value}</h3>
                 <div class="role-group">
                     <button id= "editTask">🖊</button>
                     <button id="successTask" class="success">${
-                        task.done ? "✅" : "❌"
+                        done ? "✅" : "❌"
                     }</button>
                     <button id="deleteTask" class="Red">Eliminar tarea</button>
                 </div>
@@ -26,33 +21,56 @@ const addTaskToHtml = (task) => {
                     <input class="inputEdit" type="text" name="inputEdit" placeholder="Edite su tarea">
                     <button id="overwriteTask">✅</button>
                 </div>
-            </li>
-            `;
-        }
-    } catch (error) {
-        console.log("Error al intentar agregar la tarea al html");
-        console.log(error);
-    }
-};
-
-const showInputEditTask = (taskToEdit) => {
-    try {
-        if (taskToEdit) {
-            const liTask = document.getElementById(taskToEdit[0].id);
-            const groupEditTask = liTask.querySelector(".groupEditTask");
-            groupEditTask.classList.toggle("hidden");
-        }
+            </li>`;
     } catch (error) {
         console.log(error);
     }
 };
 
-const addTaskToLocalStorage = () => {
+const addTaskToLocalStorage = () =>
     localStorage.setItem("tasks", JSON.stringify(tasks));
+
+const getTasksToLocalStorage = () => JSON.parse(localStorage.getItem("tasks"));
+
+const paintAllTasksToLocalStorage = (tasks) => {
+    taskContainer.innerHTML = "";
+    tasks.forEach((task) => addTaskToHtml(task));
 };
 
-const getTasksToLocalStorage = () => {
-    return JSON.parse(localStorage.getItem("tasks"));
+const showInputEditTask = (event) => {
+    const taskId = event.target.parentElement.parentElement.id;
+    const liTask = document.getElementById(taskId);
+    const groupEditTask = liTask.querySelector(".groupEditTask ");
+    groupEditTask.classList.toggle("hidden");
+};
+
+const overwriteTask = (event) => {
+    const inputEdit = event.target.previousElementSibling;
+
+    if (inputEdit.value === "") alert("No puedes enviar una tarea vacia");
+
+    const tasksToLocaStorage = getTasksToLocalStorage();
+    const taskId = event.target.parentElement.parentElement.id;
+    const liTask = document.getElementById(taskId);
+    const titleTask = liTask.querySelector("h3");
+
+    tasksToLocaStorage.forEach((task) => {
+        if (task.id === taskId) task.value = inputEdit.value;
+    });
+
+    titleTask.textContent = inputEdit.value;
+    tasks = tasksToLocaStorage;
+    addTaskToLocalStorage();
+    inputEdit.value = "";
+};
+
+const deleteTask = (event) => {
+    const taskId = event.target.parentElement.parentElement.id;
+    tasks = tasks.filter((task) => task.id != taskId);
+    // solo se guardarán todas las tareas menos la tarea con el id = taskId
+
+    paintAllTaskToHtml(tasks);
+    addTaskToLocalStorage();
 };
 
 const paintAllTaskToHtml = (tasks) => {
@@ -60,76 +78,28 @@ const paintAllTaskToHtml = (tasks) => {
     tasks.forEach((task) => addTaskToHtml(task));
 };
 
-const deleteTask = (event) => {
-    const taskId = event.target.parentElement.parentElement.id;
-    tasks = tasks.filter((task) => task.id != taskId);
-
-    paintAllTaskToHtml(tasks);
-    addTaskToLocalStorage();
-};
-
-// FUNCIONES REUTILIZADAS
-
-// Función que cambiará el estado done de la tarea
 const succesTask = (event) => {
-    const tasksToLocalStorage = getTasksToLocalStorage();
-    const idSuccesBtn = event.target.parentElement.parentElement.id;
-    tasksToLocalStorage.forEach((task) => {
-        if (task.id === idSuccesBtn) {
-            task.done = !task.done;
-            return;
-        }
+    const tasksToLocaStorage = getTasksToLocalStorage();
+    const taskId = event.target.parentElement.parentElement.id;
+
+    tasksToLocaStorage.forEach((task) => {
+        if (task.id === taskId) task.done = !task.done;
     });
-    tasks = tasksToLocalStorage;
+
+    tasks = tasksToLocaStorage;
     paintAllTaskToHtml(tasks);
     addTaskToLocalStorage();
-};
-
-// Función que obtendrá la tarea que queremos editar y
-// mostrará el input con el botón para editar la tarea
-const editTask = (event) => {
-    const taskId = event.target.parentElement.parentElement.id;
-    taskToEdit = tasks.filter((task) => (task.id == taskId));
-    showInputEditTask(taskToEdit);
-};
-
-// Función que sobreescribirá la vieja tarea por la nueva tareas
-const overwriteTask = (event) => {
-    const inputEdit = event.target.previousElementSibling;
-    if (inputEdit.value === "") {
-        alert("No puedes editar y guardar un valor vacio");
-        return;
-    }
-    const tasksToLocalStorage = getTasksToLocalStorage();
-
-    const taskId = event.target.parentElement.parentElement.id;
-
-    const liTask = document.getElementById(taskToEdit[0].id);
-
-    const titleTask = liTask.querySelector("h3");
-
-    tasksToLocalStorage.forEach((task) => {
-        if (task.id === taskId) {
-            task.value = inputEdit.value;
-        }
-    });
-    titleTask.textContent = inputEdit.value;
-    tasks = tasksToLocalStorage;
-    addTaskToLocalStorage();
-    inputEdit.value = "";
 };
 
 // EVENTOS
-
-formList.addEventListener("submit", (e) => {
+formList.addEventListener("submit", (event) => {
+    event.preventDefault();
     if (inputTask.value === "") {
-        alert("No puedes añadir un tarea sin valor");
-        e.preventDefault();
+        alert("NO PUEDES AGREGAR UNA TAREA VACIA");
+        return;
     }
 
     if (inputTask.value) {
-        e.preventDefault();
-
         const createdTask = {
             value: inputTask.value,
             done: false,
@@ -144,28 +114,26 @@ formList.addEventListener("submit", (e) => {
     }
 });
 
-document.addEventListener("DOMContentLoaded", () => {
-    paintAllTaskToHtml(tasks);
-});
-
 document.addEventListener("click", (event) => {
-    if (event.target.id === "createTask") {
-        // Evento que disparará la creación de una nueva tarea
+    let target = event.target;
+
+    if (target.id === "editTask") {
+        showInputEditTask(event);
     }
 
-    if (event.target.id === "deleteTask") {
+    if (target.id === "overwriteTask") {
+        overwriteTask(event);
+    }
+
+    if (target.id === "deleteTask") {
         deleteTask(event);
     }
 
-    if (event.target.id === "successTask") {
+    if (target.id === "successTask") {
         succesTask(event);
     }
+});
 
-    if (event.target.id === "editTask") {
-        editTask(event);
-    }
-
-    if (event.target.id === "overwriteTask") {
-        overwriteTask(event);
-    }
+document.addEventListener("DOMContentLoaded", () => {
+    paintAllTasksToLocalStorage(tasks);
 });
