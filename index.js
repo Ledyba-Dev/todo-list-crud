@@ -47,7 +47,9 @@ const showInputEditTask = (event) => {
 const overwriteTask = (event) => {
     const inputEdit = event.target.previousElementSibling;
 
-    if (inputEdit.value === "") alert("No puedes enviar una tarea vacia");
+    if (inputEdit.value === ""){
+        return alert("No puedes enviar una tarea vacía");
+    };
 
     const tasksToLocaStorage = getTasksToLocalStorage();
     const taskId = event.target.parentElement.parentElement.id;
